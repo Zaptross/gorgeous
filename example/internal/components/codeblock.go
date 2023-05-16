@@ -9,7 +9,6 @@ import (
 )
 
 type CodeblockProps struct {
-	Theme    Pallette
 	FilePath string
 	FileName string
 }

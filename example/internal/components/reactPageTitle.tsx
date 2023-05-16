@@ -1,11 +1,13 @@
 import react from 'react';
+import { useTheme } from '../provider/themeProvider';
 
 type Props = {
   title: string;
-  theme: Pallette;
 };
 
-export function PageTitle({ title, theme }: Props) {
+export function PageTitle({ title }: Props) {
+  const { theme } = useTheme();
+
   return (
     <h1 style={{ color: theme.Base1 }}>
       {title}

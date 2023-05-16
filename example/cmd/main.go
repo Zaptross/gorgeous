@@ -4,16 +4,17 @@ import (
 	"os"
 
 	g "github.com/zaptross/gorgeous"
-	c "github.com/zaptross/gorgeous/example/cmd/internal/components"
+	c "github.com/zaptross/gorgeous/example/internal/components"
+	prv "github.com/zaptross/gorgeous/example/internal/provider"
 )
 
 func main() {
-	theme := c.SolarizedDark
-	registerClasses(theme)
+	prv.NewThemeProvider(c.SolarizedDark)
+	registerClasses()
 	rendered := g.RenderDocument(
 		g.Document(
 			getHead(),
-			getBody(theme),
+			getBody(),
 		),
 	)
 
@@ -23,13 +24,15 @@ func main() {
 	os.WriteFile("dist/script.js", []byte(rendered.Script), 0644)
 }
 
-func getBody(theme c.Pallette) *g.HTMLElement {
+func getBody() *g.HTMLElement {
+	theme := prv.ThemeProvider.GetTheme()
+
 	return g.Body(g.EB{
 		Style: g.CSSProps{
 			"text-align": "center",
 		},
 		Children: g.CE{
-			c.PageTitle(c.PageTitleProps{Title: "✨ Gorgeous ✨", Theme: theme}),
+			c.PageTitle(c.PageTitleProps{Title: "✨ Gorgeous ✨"}),
 			g.Div(g.EB{Children: g.CE{
 				g.P(g.EB{
 					Children: g.CE{g.Text("Gorgeous is a server-side rendering library for Go, inspired by React and Flutter.")},
@@ -43,13 +46,11 @@ func getBody(theme c.Pallette) *g.HTMLElement {
 			g.Div(g.EB{
 				Children: g.CE{
 					c.Codeblock(c.CodeblockProps{
-						Theme:    theme,
-						FilePath: "./internal/components/pageTitle.go",
+						FilePath: "../internal/components/pageTitle.go",
 						FileName: "pageTitle.go",
 					}),
 					c.Codeblock(c.CodeblockProps{
-						Theme:    theme,
-						FilePath: "./internal/components/reactPageTitle.tsx",
+						FilePath: "../internal/components/reactPageTitle.tsx",
 						FileName: "pageTitle.tsx",
 					}),
 				},
