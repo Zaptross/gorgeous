@@ -25,8 +25,8 @@ func createVoidElement(element string) *HTMLElement {
 // framework elements
 
 // The text element is a special case, standing in as a placeholder for text
-// content. It is not rendered as a HTML element, but rather as text content of
-// the parent element. Eg:
+// content. It is not rendered as a HTML element, but rather as html escaped text
+// content of the parent element. Eg:
 //
 //	Div(&EB{
 //	    Children: CE{
@@ -44,6 +44,20 @@ func Text(content string) *HTMLElement {
 		Text:     html.EscapeString(content),
 	}
 }
+
+// The raw text element is a special case, standing in as a placeholder for text
+// content. It is not rendered as a HTML element, but rather as unescaped text content
+// of the parent element. Eg:
+//
+//	Div(&EB{
+//	    Children: CE{
+//	      RawText("<b>Hello, world!</b>"),
+//	    },
+//	})
+//
+// renders as:
+//
+//	`<div><b>Hello, world!</b></div>`
 func RawText(content string) *HTMLElement {
 	return &HTMLElement{
 		OpenTag:  "",
