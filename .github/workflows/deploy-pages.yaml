@@ -47,7 +47,7 @@ jobs:
               uses: actions/upload-pages-artifact@v1
               with:
                   # Upload built html, css, and js files
-                  path: './example/cmd/dist/*'
+                  path: './example/cmd/dist/'
 
             - name: Deploy to GitHub Pages
               id: deployment
