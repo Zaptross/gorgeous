@@ -3,7 +3,6 @@ package components
 import (
 	"html"
 	"os"
-	"strings"
 
 	g "github.com/zaptross/gorgeous"
 )
@@ -11,21 +10,21 @@ import (
 type CodeblockProps struct {
 	FilePath string
 	FileName string
+	Language string
 }
-
-const nbsp = "&nbsp;"
 
 func Codeblock(props CodeblockProps) *g.HTMLElement {
 	return g.Div(
 		g.EB{
 			Children: g.CE{
-				g.Div(
-					g.EB{
+				g.Pre(g.EB{Children: g.CE{
+					g.CustomElement("code", true, g.EB{
 						Children:  g.CE{g.RawText(code(props))},
-						ClassList: []string{"codeblock"},
-					},
-				),
+						ClassList: []string{"language-" + props.Language},
+					}),
+				}}),
 			},
+			ClassList: []string{"codeblock"},
 		},
 	)
 }
@@ -38,9 +37,6 @@ func code(props CodeblockProps) string {
 	}
 
 	codeString := html.EscapeString(string(raw))
-	codeString = strings.ReplaceAll(codeString, "\t", "    ")
-	codeString = strings.ReplaceAll(codeString, " ", nbsp)
-	codeString = strings.ReplaceAll(codeString, "\n", "<br>")
 
-	return "// " + props.FileName + "<br><br>" + codeString
+	return "// " + props.FileName + "\n" + codeString
 }
