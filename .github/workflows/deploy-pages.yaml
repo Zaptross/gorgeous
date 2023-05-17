@@ -36,11 +36,9 @@ jobs:
               with:
                   go-version: '1.20.4'
 
-            - run: ls
             - run: cd example/cmd && go mod download
-            - run: ls
-            - run: go run .
-            - run: ls dist/
+            - run: cd example/cmd && go run .
+            - run: ls ./example/cmd/dist/
 
             - name: Setup Pages
               uses: actions/configure-pages@v3
@@ -49,7 +47,7 @@ jobs:
               uses: actions/upload-pages-artifact@v1
               with:
                   # Upload built html, css, and js files
-                  path: 'dist/*'
+                  path: './example/cmd/dist/*'
 
             - name: Deploy to GitHub Pages
               id: deployment
