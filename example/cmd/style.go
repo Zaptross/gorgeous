@@ -21,12 +21,24 @@ func registerClasses() {
 	})
 
 	g.Class(".codeblock", g.CSSProps{
-		"background-color": theme.Base02,
-		"color":            theme.Base0,
+		"background-color": theme.Base02 + " !important",
 		"height":           "100%",
 		"border":           "1px solid " + theme.Green,
 		"padding":          "0.5rem",
-		"font-family":      "monospace",
+		"font-family":      "monospace !important",
+	})
+
+	g.Class("pre", g.CSSProps{
+		"background":  "none !important",
+		"text-shadow": "none !important",
+	})
+	g.Class("code", g.CSSProps{
+		"color":       theme.Base1 + " !important",
+		"background":  "none !important",
+		"text-shadow": "none !important",
+	})
+	g.Class(".operator", g.CSSProps{
+		"background": "none !important",
 	})
 
 	g.Class("a", g.CSSProps{
@@ -37,5 +49,9 @@ func registerClasses() {
 	g.Class("a:hover", g.CSSProps{
 		"color":           theme.Violet,
 		"text-decoration": "none",
+	})
+
+	g.Class(".code-comparison > div:first-child", g.CSSProps{
+		"margin-right": "1em",
 	})
 }

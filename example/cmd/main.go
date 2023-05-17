@@ -13,7 +13,7 @@ func main() {
 	registerClasses()
 	rendered := g.RenderDocument(
 		g.Document(
-			getHead(),
+			c.Head(),
 			getBody(),
 		),
 	)
@@ -43,25 +43,7 @@ func getBody() *g.HTMLElement {
 					Style:    g.CSSProps{"color": theme.Base2},
 				}),
 			}}),
-			g.Div(g.EB{
-				Children: g.CE{
-					c.Codeblock(c.CodeblockProps{
-						FilePath: "../internal/components/pageTitle.go",
-						FileName: "pageTitle.go",
-					}),
-					c.Codeblock(c.CodeblockProps{
-						FilePath: "../internal/components/reactPageTitle.tsx",
-						FileName: "pageTitle.tsx",
-					}),
-				},
-				Style: g.CSSProps{
-					"width":           "70%",
-					"display":         "flex",
-					"flex-direction":  "row",
-					"justify-content": "space-between",
-					"text-align":      "left",
-				},
-			}),
+			c.CodeComparison(),
 			g.P(g.EB{
 				Children: g.CE{
 					g.Text("It's still in early development, but you can check out the source code for this page on "),
@@ -75,42 +57,6 @@ func getBody() *g.HTMLElement {
 					g.Text("."),
 				},
 				Style: g.CSSProps{"color": theme.Base2, "margin-top": "2em"},
-			}),
-		},
-	})
-}
-
-func getHead() *g.HTMLElement {
-	return g.Head(g.EB{
-		Children: g.CE{
-			g.Meta(g.EB{
-				Props: g.Props{
-					"charset": "UTF-8",
-				},
-			}),
-			g.Meta(g.EB{
-				Props: g.Props{
-					"name":    "viewport",
-					"content": "width=device-width, initial-scale=1.0",
-				},
-			}),
-			g.Title(g.EB{
-				Children: g.CE{
-					g.Text("Gorgeous"),
-				},
-			}),
-			g.Link(g.EB{
-				Props: g.Props{
-					"rel":  "stylesheet",
-					"type": "text/css",
-					"href": "style.css",
-				},
-			}),
-			g.Script(g.EB{
-				Props: g.Props{
-					"type": "text/javascript",
-					"src":  "script.js",
-				},
 			}),
 		},
 	})
