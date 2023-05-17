@@ -1,8 +1,6 @@
 package main
 
 import (
-	"os"
-
 	g "github.com/zaptross/gorgeous"
 	c "github.com/zaptross/gorgeous/example/internal/components"
 	prv "github.com/zaptross/gorgeous/example/internal/provider"
@@ -18,10 +16,10 @@ func main() {
 		),
 	)
 
-	os.Mkdir("dist", 0755)
-	os.WriteFile("dist/index.html", []byte(rendered.Document), 0644)
-	os.WriteFile("dist/style.css", []byte(rendered.Style), 0644)
-	os.WriteFile("dist/script.js", []byte(rendered.Script), 0644)
+	// Render distribution files
+	createDistDirectories()
+	writeRenderedHTML(rendered)
+	copyPublicToDist()
 }
 
 func getBody() *g.HTMLElement {
