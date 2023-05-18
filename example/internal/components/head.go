@@ -4,7 +4,7 @@ import g "github.com/zaptross/gorgeous"
 
 func Head() *g.HTMLElement {
 	return g.Head(g.EB{
-		Children: append(append(Meta(), Favicon()...), PrismJS()...),
+		Children: append(append(append(Meta(), Favicon()...), PrismJS()...), OpenGraph()...),
 	})
 }
 
@@ -40,6 +40,25 @@ func Meta() []*g.HTMLElement {
 			},
 		}),
 	}
+}
+
+func OpenGraph() g.CE {
+	description := "The example website for Gorgeous, the server-side rendering library for Go."
+	return g.CE{
+		openGraphMeta("og:title", "Gorgeous"),
+		openGraphMeta("description", description),
+		openGraphMeta("og:description", description),
+		// openGraphMeta("og:image", "https://dystrophygame.com/og-image.png"),
+	}
+}
+
+func openGraphMeta(name, content string) *g.HTMLElement {
+	return g.Meta(g.EB{
+		Props: g.Props{
+			"name":    name,
+			"content": content,
+		},
+	})
 }
 
 func PrismJS() []*g.HTMLElement {
