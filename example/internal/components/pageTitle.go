@@ -2,22 +2,26 @@ package components
 
 import (
 	g "github.com/zaptross/gorgeous"
-	prv "github.com/zaptross/gorgeous/example/internal/provider"
+	p "github.com/zaptross/gorgeous/example/internal/provider"
 )
 
 type PageTitleProps struct {
 	Title string
+	Id    string
 }
 
 func PageTitle(props PageTitleProps) *g.HTMLElement {
-	theme := prv.ThemeProvider.GetTheme()
+	theme := p.ThemeProvider.GetTheme()
 
 	return g.H1(g.EB{
 		Children: g.CE{
 			g.Text(props.Title),
 		},
 		Style: g.CSSProps{
-			"color": theme.Base2,
+			"color":   theme.Base2,
+			"margin":  "0 0",
+			"padding": "0.67em 0.67em",
 		},
+		Id: props.Id,
 	})
 }

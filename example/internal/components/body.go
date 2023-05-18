@@ -8,12 +8,14 @@ import (
 func Body() *g.HTMLElement {
 	theme := prv.ThemeProvider.GetTheme()
 
+	titleId := "title-element"
+
 	return g.Body(g.EB{
 		Style: g.CSSProps{
 			"text-align": "center",
 		},
 		Children: g.CE{
-			PageTitle(PageTitleProps{Title: "✨ Gorgeous ✨"}),
+			PageTitle(PageTitleProps{Id: titleId, Title: "✨ Gorgeous ✨"}),
 			g.Div(g.EB{Children: g.CE{
 				g.P(g.EB{
 					Children: g.CE{g.Text("Gorgeous is a server-side rendering library for Go, inspired by React and Flutter.")},
@@ -24,7 +26,7 @@ func Body() *g.HTMLElement {
 					Style:    g.CSSProps{"color": theme.Base2},
 				}),
 			}}),
-			CodeComparison(),
+			CodeComparison(titleId),
 			g.P(g.EB{
 				Children: g.CE{
 					g.Text("It's still in early development, but you can check out the source code for this page on "),
