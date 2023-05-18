@@ -34,11 +34,12 @@ type EB struct {
 	//
 	// renders as:
 	//
-	//	<body onload="() => {
+	//	<script id="script-element-example">
 	//		((thisElement) => {
 	//			thisElement.value = 'Hello, world!';
-	//		})(document.getElementById('element-example'))
-	//	}"></body>
+	//		})(document.getElementById('element-example'));
+	//		document.getElementById('script-element-example').remove();
+	//	</script>
 	Script JavaScript
 
 	// html element children
