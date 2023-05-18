@@ -22,7 +22,6 @@ func RenderDocument(document *HTMLElement) *RenderedHTML {
 func RenderElement(element *HTMLElement) *RenderedHTML {
 	renderedHtml := &RenderedHTML{
 		Document: "",
-		Script:   "",
 		Style:    "",
 	}
 
@@ -34,29 +33,16 @@ func RenderElement(element *HTMLElement) *RenderedHTML {
 
 	renderedChildren := &RenderedHTML{
 		Document: "",
-		Script:   "",
 		Style:    "",
 	}
 
 	for _, child := range element.Children {
 		renderedChild := RenderElement(child)
 		renderedChildren.Document += renderedChild.Document
-		renderedChildren.Script += renderedChild.Script
 		renderedChildren.Style += renderedChild.Style
 	}
 
-	if strings.Contains(element.OpenTag, "body") {
-		if element.EB.Props == nil {
-			element.EB.Props = Props{}
-		}
-
-		element.EB.Props["onload"] = fmt.Sprintf(`(() => { %s %s })()`, renderElementScript(element), renderedChildren.Script)
-		element.EB.Script = ""
-		renderedChildren.Script = ""
-	}
-
-	renderedHtml.Script += renderElementScript(element) + renderedChildren.Script
-	renderedHtml.Document += renderElementProps(element) + renderedChildren.Document + HTML(element.CloseTag)
+	renderedHtml.Document += renderElementProps(element) + renderedChildren.Document + HTML(element.CloseTag) + renderElementScript(element)
 
 	renderedHtml.Style += renderedChildren.Style
 
@@ -76,14 +62,14 @@ func renderElementProps(element *HTMLElement) HTML {
 	return HTML(fmt.Sprintf(
 		`%s %s %s %s %s >`,
 		element.OpenTag,
-		renderElementId(element.EB.Id),
+		renderElementId(element),
 		renderStyles(element.EB.Style),
 		renderClassList(element.EB.ClassList),
 		renderTextProps(element.EB.Props),
 	))
 }
 
-func renderElementScript(element *HTMLElement) JavaScript {
+func renderElementScript(element *HTMLElement) HTML {
 	if element.Script == "" {
 		return ""
 	}
@@ -92,19 +78,24 @@ func renderElementScript(element *HTMLElement) JavaScript {
 		element.EB.Id = uuid.NewString()
 	}
 
-	return JavaScript(fmt.Sprintf(
-		`((thisElement) => { %s })(document.getElementById('%s'));`,
+	return HTML(fmt.Sprintf(
+		`<script id="script-%s">
+			((thisElement) => { %s })(document.getElementById('%s'));
+			document.getElementById('script-%s').remove();
+		</script>`,
+		element.Id,
 		element.Script,
+		element.Id,
 		element.Id,
 	))
 }
 
-func renderElementId(id string) string {
-	if id == "" {
-		id = uuid.NewString()
+func renderElementId(element *HTMLElement) string {
+	if element.EB.Id == "" {
+		element.EB.Id = uuid.NewString()
 	}
 
-	return fmt.Sprintf(`id="%s"`, id)
+	return fmt.Sprintf(`id="%s"`, element.EB.Id)
 }
 
 func renderStyles(styles CSSProps) string {
