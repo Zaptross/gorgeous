@@ -24,6 +24,23 @@ type EB struct {
 	// html element properties (e.g. type="text" for input elements)
 	Props Props
 
+	// Client-side code specific to the element, run when the document is loaded
+	// in the browser.
+	//
+	// Eg:
+	//
+	//	Id: "element-example",
+	//	Script: `thisElement.value = 'Hello, world!'`
+	//
+	// renders as:
+	//
+	//	<body onload="() => {
+	//		((thisElement) => {
+	//			thisElement.value = 'Hello, world!';
+	//		})(document.getElementById('element-example'))
+	//	}"></body>
+	Script JavaScript
+
 	// html element children
 	Children CE
 }
@@ -46,5 +63,6 @@ type HTMLElement struct {
 type RenderedHTML struct {
 	Document HTML
 	Script   JavaScript
+	Services JavaScript
 	Style    CSS
 }

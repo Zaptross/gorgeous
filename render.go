@@ -2,6 +2,7 @@ package gorgeous
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -11,7 +12,7 @@ func RenderDocument(document *HTMLElement) *RenderedHTML {
 
 	renderedHtml := &RenderedHTML{
 		Document: renderedDocument.Document,
-		Script:   collectServices() + renderedDocument.Script,
+		Script:   collectServices(),
 		Style:    collectClasses() + renderedDocument.Style,
 	}
 
@@ -31,18 +32,33 @@ func RenderElement(element *HTMLElement) *RenderedHTML {
 		return renderedHtml
 	}
 
-	renderedHtml.Document += renderElementProps(element)
+	renderedChildren := &RenderedHTML{
+		Document: "",
+		Script:   "",
+		Style:    "",
+	}
 
 	for _, child := range element.Children {
 		renderedChild := RenderElement(child)
-		renderedHtml.Document += renderedChild.Document
-		renderedHtml.Script += renderedChild.Script
-		renderedHtml.Style += renderedChild.Style
+		renderedChildren.Document += renderedChild.Document
+		renderedChildren.Script += renderedChild.Script
+		renderedChildren.Style += renderedChild.Style
 	}
 
-	renderedHtml.Document += HTML(element.CloseTag)
-	renderedHtml.Script += JavaScript("") // TODO: add script rendering
-	renderedHtml.Style += CSS("")         // TODO: add style rendering
+	if strings.Contains(element.OpenTag, "body") {
+		if element.EB.Props == nil {
+			element.EB.Props = Props{}
+		}
+
+		element.EB.Props["onload"] = fmt.Sprintf(`(() => { %s %s })()`, renderElementScript(element), renderedChildren.Script)
+		element.EB.Script = ""
+		renderedChildren.Script = ""
+	}
+
+	renderedHtml.Script += renderElementScript(element) + renderedChildren.Script
+	renderedHtml.Document += renderElementProps(element) + renderedChildren.Document + HTML(element.CloseTag)
+
+	renderedHtml.Style += renderedChildren.Style
 
 	return renderedHtml
 }
@@ -58,7 +74,7 @@ func renderTextContent(element *HTMLElement) HTML {
 
 func renderElementProps(element *HTMLElement) HTML {
 	return HTML(fmt.Sprintf(
-		`%s id="%s" %s %s %s >`,
+		`%s %s %s %s %s >`,
 		element.OpenTag,
 		renderElementId(element.EB.Id),
 		renderStyles(element.EB.Style),
@@ -67,9 +83,25 @@ func renderElementProps(element *HTMLElement) HTML {
 	))
 }
 
+func renderElementScript(element *HTMLElement) JavaScript {
+	if element.Script == "" {
+		return ""
+	}
+
+	if element.EB.Id == "" {
+		element.EB.Id = uuid.NewString()
+	}
+
+	return JavaScript(fmt.Sprintf(
+		`((thisElement) => { %s })(document.getElementById('%s'));`,
+		element.Script,
+		element.Id,
+	))
+}
+
 func renderElementId(id string) string {
 	if id == "" {
-		return uuid.NewString()
+		id = uuid.NewString()
 	}
 
 	return fmt.Sprintf(`id="%s"`, id)
@@ -121,7 +153,7 @@ func renderTextProps(props Props) string {
 	}
 
 	for key, value := range props {
-		textProps += fmt.Sprintf(`%s="%s"`, key, value)
+		textProps += fmt.Sprintf(` %s="%s"`, key, strings.ReplaceAll(value, `"`, `'`))
 	}
 
 	return textProps

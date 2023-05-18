@@ -6,9 +6,11 @@ import "fmt"
 
 var services = map[string]JavaScript{}
 
-func RegisterService(name string, service JavaScript) {
+func Service(name string, service JavaScript) {
 	if services[name] != "" {
-		panic(fmt.Sprintf(`gorgeous: service '%s' is already registered`, name))
+		if service != services[name] {
+			panic(fmt.Sprintf(`gorgeous: service '%s' is already registered, but with a different value`, name))
+		}
 	}
 	services[name] = service
 }
