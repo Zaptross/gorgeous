@@ -44,6 +44,8 @@ type EB struct {
 
 	// html element children
 	Children CE
+
+	Deferred bool
 }
 
 // HTMLElement is the base type for all HTML elements
@@ -56,6 +58,8 @@ type HTMLElement struct {
 	// render properties
 	OpenTag  string
 	CloseTag string
+
+	Deferred bool
 }
 
 // RenderedHTML is the result of calling the Render function, it contains the
