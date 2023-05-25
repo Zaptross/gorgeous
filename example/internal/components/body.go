@@ -1,6 +1,8 @@
 package components
 
 import (
+	"time"
+
 	g "github.com/zaptross/gorgeous"
 	prv "github.com/zaptross/gorgeous/example/internal/provider"
 )
@@ -40,6 +42,12 @@ func Body() *g.HTMLElement {
 					g.Text("."),
 				},
 				Style: g.CSSProps{"color": theme.Base2, "margin-top": "2em"},
+			}),
+			g.P(g.EB{
+				Deferred: true,
+				Children: g.CE{g.Text("This document was rendered at " + time.Now().Format("03:04:05 PM") + ". This page was rendered at ${new Date().toLocaleTimeString()}")},
+				Script:   g.JavaScript("thisElement.innerText += `, appended by script at: ${new Date().toLocaleTimeString()}.`"),
+				Style:    g.CSSProps{"color": theme.Base2, "margin-block-start": "0"},
 			}),
 		},
 	})

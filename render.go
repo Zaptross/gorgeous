@@ -8,7 +8,7 @@ import (
 )
 
 func RenderDocument(document *HTMLElement) *RenderedHTML {
-	renderedDocument := RenderElement(document)
+	renderedDocument := RenderElement(document, "body")
 
 	renderedHtml := &RenderedHTML{
 		Document: renderedDocument.Document,
@@ -19,10 +19,24 @@ func RenderDocument(document *HTMLElement) *RenderedHTML {
 	return renderedHtml
 }
 
-func RenderElement(element *HTMLElement) *RenderedHTML {
+func RenderElement(element *HTMLElement, parentId string) *RenderedHTML {
 	renderedHtml := &RenderedHTML{
 		Document: "",
 		Style:    "",
+	}
+
+	if element.EB.Id == "" {
+		element.EB.Id = uuid.New().String()
+	}
+
+	// Render deferred element and return early
+	if element.EB.Deferred {
+		deferredElement := renderElementDeferred(element, parentId)
+		renderedHtml.Document += HTML(fmt.Sprintf(`<script id="script-%s">
+		%s
+		document.getElementById('script-%s').remove();
+		</script>`, element.EB.Id, deferredElement.Script, element.EB.Id))
+		return renderedHtml
 	}
 
 	// Render text content and return early
@@ -37,7 +51,7 @@ func RenderElement(element *HTMLElement) *RenderedHTML {
 	}
 
 	for _, child := range element.Children {
-		renderedChild := RenderElement(child)
+		renderedChild := RenderElement(child, element.EB.Id)
 		renderedChildren.Document += renderedChild.Document
 		renderedChildren.Style += renderedChild.Style
 	}
@@ -63,8 +77,8 @@ func renderElementProps(element *HTMLElement) HTML {
 		`%s %s %s %s %s >`,
 		element.OpenTag,
 		renderElementId(element),
-		renderStyles(element.EB.Style),
-		renderClassList(element.EB.ClassList),
+		`style="`+renderStyles(element.EB.Style)+`"`,
+		`class="`+renderClassList(element.EB.ClassList)+`"`,
 		renderTextProps(element.EB.Props),
 	))
 }
@@ -109,7 +123,7 @@ func renderStyles(styles CSSProps) string {
 		style += fmt.Sprintf(`%s: %s;`, key, value)
 	}
 
-	return fmt.Sprintf(`style="%s"`, style)
+	return style
 }
 
 func renderClassList(classList []string) string {
@@ -123,7 +137,7 @@ func renderClassList(classList []string) string {
 		classes += fmt.Sprintf(`%s `, class)
 	}
 
-	return fmt.Sprintf(`class="%s"`, classes)
+	return classes
 }
 
 func renderCSSProps(name string, class CSSProps) CSS {

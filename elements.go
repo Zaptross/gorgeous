@@ -119,7 +119,12 @@ func Head(e EB) *HTMLElement { return apply(createElement("head"), e) }
 // Creates a new Body element.
 // ⚠ This element should only be used once per document.
 // MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/body
-func Body(e EB) *HTMLElement { return apply(createElement("body"), e) }
+func Body(e EB) *HTMLElement {
+	b := apply(createElement("body"), e)
+	b.Id = "body"
+	b.EB.Id = "body"
+	return b
+}
 
 // Head
 
