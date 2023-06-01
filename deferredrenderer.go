@@ -39,6 +39,8 @@ func renderElementDeferredProps(element *HTMLElement, parentId string, innerText
 		element.EB.Id = uuid.New().String()
 	}
 
+       // TODO - this should probably be refactored into a default service function
+       // TODO - this needs some way to handle rerendering elements of the sub tree
 	return JavaScript(fmt.Sprintf(
 		`{
 		const ele = document.createElement("%s");
