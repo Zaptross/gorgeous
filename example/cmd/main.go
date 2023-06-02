@@ -9,7 +9,7 @@ import (
 func main() {
 	prv.NewThemeProvider(c.SolarizedDark)
 	registerClasses()
-	rendered := g.RenderDocument(
+	rendered := g.RenderPage(
 		g.Document(
 			c.Head(),
 			c.Body(),

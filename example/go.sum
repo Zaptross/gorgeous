@@ -1,2 +1,4 @@
 github.com/google/uuid v1.3.0 h1:t6JiXgmwXMjEs8VusXIJk2BXHsn+wx8BZdTaoZ5fu7I=
 github.com/google/uuid v1.3.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/zaptross/gorgeous v0.0.0-20230601212658-9d4561f79896 h1:zv9jUXgZKJUS4aaSu+qan0h6AwNPOHjMw/XMxnYSCBk=
+github.com/zaptross/gorgeous v0.0.0-20230601212658-9d4561f79896/go.mod h1:Ozbs04ozO3H+278tJ8LZFwMtIm5MCzNCqBTmGwE2HjE=
