@@ -56,7 +56,13 @@ type HTMLElement struct {
 	Text string
 
 	// render properties
-	OpenTag  string
+
+	// The HTML tag name of the element eg: div
+	// Primarily used for disambiguating between different elements
+	Tag string
+	// The opening tag of the element including the angle brace eg: <div
+	OpenTag string
+	// The closing tag of the element including the angle brace eg: </div>
 	CloseTag string
 
 	Deferred bool

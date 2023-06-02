@@ -9,6 +9,7 @@ func apply(element *HTMLElement, base EB) *HTMLElement {
 
 func createElement(element string) *HTMLElement {
 	return &HTMLElement{
+		Tag:      element,
 		OpenTag:  "<" + element,
 		CloseTag: "</" + element + ">",
 	}
@@ -136,13 +137,17 @@ func Meta(e EB) *HTMLElement { return apply(createVoidElement("meta"), e) }
 // MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link
 func Link(e EB) *HTMLElement { return apply(createVoidElement("link"), e) }
 
-// Creates a new Style element.
-// MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style
+// Creates a new Title element.
+// MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/title
 func Title(e EB) *HTMLElement { return apply(createElement("title"), e) }
+
+// Creates a new Script element.
+// MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script
+func Script(e EB) *HTMLElement { return apply(createElement("script"), e) }
 
 // Creates a new Style element.
 // MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/style
-func Script(e EB) *HTMLElement { return apply(createElement("script"), e) }
+func Style(e EB) *HTMLElement { return apply(createElement("style"), e) }
 
 // Headings
 

@@ -7,7 +7,13 @@ import (
 	"github.com/google/uuid"
 )
 
+// Deprecated: use RenderStatic instead
 func RenderDocument(document *HTMLElement) *RenderedHTML {
+	panic("RenderDocument is deprecated, use RenderStatic instead")
+}
+
+// Renders as three separate file contents for html, css, and js
+func RenderStatic(document *HTMLElement) *RenderedHTML {
 	renderedDocument := RenderElement(document, "body")
 
 	renderedHtml := &RenderedHTML{
@@ -17,6 +23,50 @@ func RenderDocument(document *HTMLElement) *RenderedHTML {
 	}
 
 	return renderedHtml
+}
+
+// Renders as a combined document, embedding css and js into the html document head.
+// Note: this assumes that the document contains a head and body at the first level of children,
+// eg: using gorgeous.Document()
+func RenderPage(document *HTMLElement) *HTML {
+	body, head := findBodyAndHead(document)
+
+	head.Children = append(
+		head.Children,
+		Script(
+			EB{
+				Children: CE{Text(string(collectServices()))},
+			},
+		),
+		Style(
+			EB{
+				Children: CE{Text(string(collectClasses()))},
+			},
+		),
+	)
+
+	return &RenderStatic(
+		Document(
+			head,
+			body,
+		),
+	).Document
+}
+
+// Search the top level of the document to render for the head and body elements
+// otherwise assume the document is a body element
+func findBodyAndHead(document *HTMLElement) (*HTMLElement, *HTMLElement) {
+	var body, head *HTMLElement
+
+	for _, child := range document.Children {
+		if child.Tag == "body" {
+			body = child
+		} else if child.Tag == "head" {
+			head = child
+		}
+	}
+
+	return body, head
 }
 
 func RenderElement(element *HTMLElement, parentId string) *RenderedHTML {
