@@ -11,11 +11,10 @@ func createDistDirectories() {
 	os.Mkdir("dist/public", 0755)
 }
 
-// func writeRenderedHTML(rendered *g.RenderedHTML) {
-func writeRenderedHTML(rendered *g.HTML) {
-	os.WriteFile("dist/index.html", []byte(rendered), 0644)
-	// os.WriteFile("dist/style.css", []byte(rendered.Style), 0644)
-	// os.WriteFile("dist/script.js", []byte(rendered.Script), 0644)
+func writeRenderedHTML(rendered *g.RenderedHTML) {
+	os.WriteFile("dist/index.html", []byte(rendered.Document), 0644)
+	os.WriteFile("dist/style.css", []byte(rendered.Style), 0644)
+	os.WriteFile("dist/script.js", []byte(rendered.Script), 0644)
 }
 
 func copyPublicToDist() {
