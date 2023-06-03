@@ -33,16 +33,9 @@ func RenderPage(document *HTMLElement) *HTML {
 
 	head.Children = append(
 		head.Children,
-		Script(
-			EB{
-				Children: CE{Text(string(collectServices()))},
-			},
-		),
-		Style(
-			EB{
-				Children: CE{Text(string(collectClasses()))},
-			},
-		),
+		// Compile the services and classes into the html
+		Script(EB{Text: collectServices().String()}),
+		Style(EB{Text: collectClasses().String()}),
 	)
 
 	return &RenderStatic(
@@ -90,7 +83,7 @@ func RenderElement(element *HTMLElement, parentId string) *RenderedHTML {
 	}
 
 	// Render text content and return early
-	if element.Text != "" {
+	if element.OpenTag == "" && element.Text != "" {
 		renderedHtml.Document += renderTextContent(element)
 		return renderedHtml
 	}
@@ -123,13 +116,19 @@ func renderTextContent(element *HTMLElement) HTML {
 }
 
 func renderElementProps(element *HTMLElement) HTML {
+	text := ""
+	if element.Text != "" {
+		text = element.Text
+	}
+
 	return HTML(fmt.Sprintf(
-		`%s %s %s %s %s >`,
+		`%s %s %s %s %s >%s`,
 		element.OpenTag,
 		renderElementId(element),
 		`style="`+renderStyles(element.EB.Style)+`"`,
 		`class="`+renderClassList(element.EB.ClassList)+`"`,
 		renderTextProps(element.EB.Props),
+		text,
 	))
 }
 

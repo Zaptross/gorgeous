@@ -1,8 +1,17 @@
 package gorgeous
 
-type HTML string
-type JavaScript string
 type CSS string
+
+func (c CSS) String() string { return string(c) }
+
+type HTML string
+
+func (h HTML) String() string { return string(h) }
+
+type JavaScript string
+
+func (j JavaScript) String() string { return string(j) }
+
 type Props map[string]string
 
 // CE stands for Child Elements - it is a slice of HTMLElement pointers
@@ -20,6 +29,9 @@ type EB struct {
 	OnClick   string
 	Style     CSSProps
 	ClassList []string
+
+	// html element text content
+	Text string
 
 	// html element properties (e.g. type="text" for input elements)
 	Props Props
@@ -52,7 +64,8 @@ type EB struct {
 type HTMLElement struct {
 	EB
 
-	// html element text content
+	// html element text content, if Text is present in the EB struct then
+	// it will override this value.
 	Text string
 
 	// render properties
@@ -65,6 +78,10 @@ type HTMLElement struct {
 	// The closing tag of the element including the angle brace eg: </div>
 	CloseTag string
 
+	// Optionally render the element in a deferred manner, this is useful for
+	// rendering elements that are not visible on the page when it is first loaded
+	// eg: elements that are only visible when the user scrolls down the page
+	// or elements that are only visible when the user clicks a button.
 	Deferred bool
 }
 
