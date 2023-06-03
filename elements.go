@@ -4,6 +4,7 @@ import "html"
 
 func apply(element *HTMLElement, base EB) *HTMLElement {
 	element.EB = base
+	element.Text = base.Text
 	return element
 }
 
