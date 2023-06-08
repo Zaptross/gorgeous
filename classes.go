@@ -2,12 +2,13 @@ package gorgeous
 
 import "fmt"
 
-var classes = map[string]CSS{}
+var classes = map[string]CSSClass{}
 var media = map[string][]CSS{}
 
 // Create a CSS class from a map of CSS properties and
 // adds it to the global css.
 // Eg:
+//
 //	gorgeous.Class("my-class", gorgeous.CSSProps{
 //		"color": "red",
 //	})
@@ -17,13 +18,21 @@ var media = map[string][]CSS{}
 //	`.my-class {
 //		color: red;
 //	}`
-func Class(name string, class CSSProps) {
-	RawClass(name, renderCSSProps(name, class))
+func Class(name string, class CSSProps) *CSSClass {
+	cl := CSSClass{
+		Name:  name,
+		Class: class,
+	}
+
+	classes[name] = cl
+
+	return &cl
 }
 
 // Create a CSS class within a media query from a map of CSS properties and
 // adds it to the global css.
 // Eg:
+//
 //	gorgeous.Media("(max-width: 600px)", "my-class", gorgeous.CSSProps{
 //		"color": "red",
 //	})
@@ -41,6 +50,7 @@ func Media(query string, name string, class CSSProps) {
 
 // Create a CSS class within a media query from a string and adds it to the global css.
 // Eg:
+//
 //	gorgeous.RawMedia("(max-width: 600px)", `.my-class {
 //		color: red;
 //	}`)
@@ -62,6 +72,7 @@ func RawMedia(query string, class CSS) {
 
 // Create a CSS class from a string and adds it to the global css.
 // Eg:
+//
 //	gorgeous.RawClass("my-class", `.my-class {
 //		color: red;
 //	}`)
@@ -72,10 +83,13 @@ func RawMedia(query string, class CSS) {
 //		color: red;
 //	}`
 func RawClass(name string, class CSS) {
-	if classes[name] != "" {
+	if classes[name].Name != "" {
 		panic(fmt.Sprintf(`gorgeous: class '%s' is already registered`, name))
 	}
-	classes[name] = class
+	classes[name] = CSSClass{
+		Name: name,
+		Raw:  class,
+	}
 }
 
 // Collects all registered CSS classes into a single CSS string.
@@ -83,7 +97,11 @@ func collectClasses() CSS {
 	var collected CSS
 
 	for _, class := range classes {
-		collected += class + "\n"
+		if class.Raw != "" {
+			collected += class.Raw + "\n"
+		} else {
+			collected += renderCSSProps(class.Name, class.Class) + "\n"
+		}
 	}
 
 	for query, classes := range media {
