@@ -20,6 +20,23 @@ func CodeComparison(titleElementId string) *g.HTMLElement {
 		"-moz-box-shadow":    fmt.Sprintf("inset 0 0 0 2px %s", theme.Green),
 	})
 
+	g.Class(".code-comparison", g.CSSProps{
+		"display":         "flex",
+		"flex-direction":  "row",
+		"justify-content": "space-between",
+		"text-align":      "left",
+	})
+
+	mediaSquare := "(max-aspect-ratio: 1.2)"
+
+	g.Media(mediaSquare, ".code-comparison", g.CSSProps{
+		"flex-direction": "column",
+	})
+
+	g.Media(mediaSquare, ".code-comparison div", g.CSSProps{
+		"width": "100%",
+	})
+
 	return g.Div(g.EB{
 		ClassList: []string{"code-comparison"},
 		Children: g.CE{
@@ -34,12 +51,7 @@ func CodeComparison(titleElementId string) *g.HTMLElement {
 				Language: "tsx",
 			}),
 		},
-		Style: g.CSSProps{
-			"display":         "flex",
-			"flex-direction":  "row",
-			"justify-content": "space-between",
-			"text-align":      "left",
-		},
+		Style:  g.CSSProps{},
 		Script: g.JavaScript(g.JavaScript(getMouseEventScript(es, titleElementId))),
 	})
 }
