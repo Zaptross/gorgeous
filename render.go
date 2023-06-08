@@ -19,7 +19,7 @@ func RenderStatic(document *HTMLElement) *RenderedHTML {
 	renderedHtml := &RenderedHTML{
 		Document: renderedDocument.Document,
 		Script:   collectServices(),
-		Style:    collectClasses() + renderedDocument.Style,
+		Style:    collectClasses(renderedDocument.Document) + renderedDocument.Style,
 	}
 
 	return renderedHtml
@@ -31,19 +31,27 @@ func RenderStatic(document *HTMLElement) *RenderedHTML {
 func RenderPage(document *HTMLElement) *HTML {
 	body, head := findBodyAndHead(document)
 
+	replaceText := "{{tree-shaken-css}}"
+
 	head.Children = append(
 		head.Children,
 		// Compile the services and classes into the html
 		Script(EB{Text: collectServices().String()}),
-		Style(EB{Text: collectClasses().String()}),
+		Style(EB{Text: replaceText}),
 	)
 
-	return &RenderStatic(
+	classes := collectClasses("").String()
+
+	doc := RenderStatic(
 		Document(
 			head,
 			body,
 		),
 	).Document
+
+	doc = HTML(strings.ReplaceAll(doc.String(), replaceText, classes))
+
+	return &doc
 }
 
 // Search the top level of the document to render for the head and body elements

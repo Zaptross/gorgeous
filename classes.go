@@ -1,6 +1,9 @@
 package gorgeous
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 var classes = map[string]CSSClass{}
 var media = map[string][]CSS{}
@@ -93,10 +96,15 @@ func RawClass(name string, class CSS) {
 }
 
 // Collects all registered CSS classes into a single CSS string.
-func collectClasses() CSS {
+func collectClasses(document HTML) CSS {
 	var collected CSS
 
 	for _, class := range classes {
+		// If a document is provided, only include classes that are used in the document.
+		if document != "" && !strings.Contains(document.String(), class.Name) {
+			continue
+		}
+
 		if class.Raw != "" {
 			collected += class.Raw + "\n"
 		} else {
