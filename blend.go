@@ -46,6 +46,7 @@ func Blend(classes ...CSSClass) string {
 	return extractClassName(out.Selector)
 }
 
+// TODO - add example usage, document
 func BlendFrom(names ...string) {
 	blendClasses := []CSSClass{}
 	for _, name := range names {
