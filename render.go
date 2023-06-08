@@ -31,7 +31,7 @@ func RenderStatic(document *HTMLElement) *RenderedHTML {
 func RenderPage(document *HTMLElement) *HTML {
 	body, head := findBodyAndHead(document)
 
-	replaceText := "{{tree-shaken-css}}"
+	replaceText := "{{" + uuid.NewString() + "}}"
 
 	head.Children = append(
 		head.Children,

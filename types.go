@@ -5,9 +5,23 @@ type CSS string
 func (c CSS) String() string { return string(c) }
 
 type CSSClass struct {
-	Name  string
-	Class CSSProps
-	Raw   CSS
+	// The Selector property is used to specify a CSS selector (e.g. "div.my-class").
+	// This is useful for specifying complex selectors such as pseudo-classes and
+	// pseudo-elements.
+	//
+	// ⚠ WARNING: The Selector property is not validated, so you must ensure that
+	// it is valid CSS.
+	Selector string `required:"true"`
+
+	// Whether to include the class in the rendered CSS, even if it is not used in
+	// the document. Defaults to false.
+	Include bool `default:"false"`
+
+	// The CSS properties of the CSS class.
+	Props CSSProps `required:"true"`
+
+	// The raw CSS of the CSS class.
+	Raw CSS
 }
 
 type HTML string

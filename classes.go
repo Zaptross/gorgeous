@@ -12,8 +12,11 @@ var media = map[string][]CSS{}
 // adds it to the global css.
 // Eg:
 //
-//	gorgeous.Class("my-class", gorgeous.CSSProps{
-//		"color": "red",
+//	gorgeous.Class(gorgeous.CSSClass{
+//		Selector: ".my-class",
+//		Props: gorgeous.CSSProps{
+//			"color": "red",
+//		},
 //	})
 //
 // renders as:
@@ -21,15 +24,10 @@ var media = map[string][]CSS{}
 //	`.my-class {
 //		color: red;
 //	}`
-func Class(name string, class CSSProps) *CSSClass {
-	cl := CSSClass{
-		Name:  name,
-		Class: class,
-	}
+func Class(c *CSSClass) *CSSClass {
+	classes[c.Selector] = *c
 
-	classes[name] = cl
-
-	return &cl
+	return c
 }
 
 // Create a CSS class within a media query from a map of CSS properties and
@@ -86,12 +84,12 @@ func RawMedia(query string, class CSS) {
 //		color: red;
 //	}`
 func RawClass(name string, class CSS) {
-	if classes[name].Name != "" {
+	if classes[name].Selector != "" {
 		panic(fmt.Sprintf(`gorgeous: class '%s' is already registered`, name))
 	}
 	classes[name] = CSSClass{
-		Name: name,
-		Raw:  class,
+		Selector: name,
+		Raw:      class,
 	}
 }
 
@@ -101,14 +99,14 @@ func collectClasses(document HTML) CSS {
 
 	for _, class := range classes {
 		// If a document is provided, only include classes that are used in the document.
-		if document != "" && !strings.Contains(document.String(), class.Name) {
+		if !class.Include && document != "" && !strings.Contains(document.String(), extractClassName(class.Selector)) {
 			continue
 		}
 
 		if class.Raw != "" {
 			collected += class.Raw + "\n"
 		} else {
-			collected += renderCSSProps(class.Name, class.Class) + "\n"
+			collected += renderCSSProps(class.Selector, class.Props) + "\n"
 		}
 	}
 
