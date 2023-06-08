@@ -14,7 +14,8 @@ func Body() *g.HTMLElement {
 
 	return g.Body(g.EB{
 		Style: g.CSSProps{
-			"text-align": "center",
+			"text-align":    "center",
+			"margin-bottom": "10px",
 		},
 		Children: g.CE{
 			PageTitle(PageTitleProps{Id: titleId, Title: "✨ Gorgeous ✨"}),
@@ -47,7 +48,7 @@ func Body() *g.HTMLElement {
 				Deferred: true,
 				Children: g.CE{g.Text("This document was rendered at " + time.Now().Format("03:04:05 PM") + ". This page was rendered at ${new Date().toLocaleTimeString()}")},
 				Script:   g.JavaScript("thisElement.innerText += `, appended by script at: ${new Date().toLocaleTimeString()}.`"),
-				Style:    g.CSSProps{"color": theme.Base2, "margin-block-start": "0"},
+				Style:    g.CSSProps{"color": theme.Base2, "padding-bottom": "2em"},
 			}),
 		},
 	})
