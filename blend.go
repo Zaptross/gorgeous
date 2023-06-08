@@ -2,7 +2,7 @@ package gorgeous
 
 import (
 	"fmt"
-	"regexp"
+	"strings"
 )
 
 // Create a CSS class from any number of CSS classes. The properties of the CSS classes
@@ -27,13 +27,13 @@ import (
 //	`.redtext_bluetext {
 //		color: blue;
 //	}`
-func Blend(classes ...CSSClass) {
+func Blend(classes ...CSSClass) string {
 	if len(classes) == 0 {
-		return
+		return ""
 	}
 
 	if len(classes) == 1 {
-		RawClass(classes[0].Name, renderCSSProps(classes[0].Name, classes[0].Class))
+		Class(&classes[0])
 	}
 
 	out := classes[0]
@@ -41,7 +41,9 @@ func Blend(classes ...CSSClass) {
 		out = out.Blend(classes[i])
 	}
 
-	RawClass(out.Name, renderCSSProps(out.Name, out.Class))
+	Class(&out)
+
+	return extractClassName(out.Selector)
 }
 
 func BlendFrom(names ...string) {
@@ -57,8 +59,8 @@ func BlendFrom(names ...string) {
 // overwrite the properties of the first class.
 func (a *CSSClass) Blend(b CSSClass) CSSClass {
 	return CSSClass{
-		Name:  blendClassNames(a.Name, b.Name),
-		Class: blendCssProps(a.Class, b.Class),
+		Selector: blendClassNames(a.Selector, b.Selector),
+		Props:    blendCssProps(a.Props, b.Props),
 	}
 }
 
@@ -81,10 +83,46 @@ func blendCssProps(a CSSProps, b CSSProps) CSSProps {
 // Blends the class names of two CSS classes into a new CSS class name.
 // The class names are separated by a underscore, and contain only letters, numbers and underscores.
 func blendClassNames(a string, b string) string {
-	return fmt.Sprintf("%s_%s", stripNameForBlend(a), stripNameForBlend(b))
+	return fmt.Sprintf(".%s_%s", extractClassName(a), extractClassName(b))
 }
 
-func stripNameForBlend(name string) string {
-	re := regexp.MustCompile(`[^a-zA-Z0-9\-_]`)
-	return re.ReplaceAllString(name, "_")
+// Extracts the class name from a string.
+// Eg:
+//
+//	extractClassName("my-class") // returns "my-class"
+//	extractClassName(".my-class") // returns "my-class"
+//	extractClassName(".my-class > div") // returns "my-class"
+//	extractClassName(".my-class>div") // returns "my-class"
+//	extractClassName(".my-class:active") // returns "my-class"
+//	extractClassName(".my-class, .my-other-class") // returns "my-class"
+//	extractClassName(".my-class.my-other-class") // returns "my-class"
+func extractClassName(class string) string {
+	if class == "" {
+		return ""
+	}
+
+	extracted := ""
+
+	if class[0] == '.' {
+		extracted = class[1:]
+	} else {
+		extracted = class
+	}
+
+	extracted = strings.Split(extracted, " ")[0]
+
+	if strings.Contains(extracted, ":") {
+		extracted = strings.Split(extracted, ":")[0]
+	}
+	if strings.Contains(extracted, ">") {
+		extracted = strings.Split(extracted, ">")[0]
+	}
+	if strings.Contains(extracted, ",") {
+		extracted = strings.Split(extracted, ",")[0]
+	}
+	if strings.Contains(extracted, ".") {
+		extracted = strings.Split(extracted, ".")[0]
+	}
+
+	return extracted
 }
