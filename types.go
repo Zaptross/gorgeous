@@ -4,6 +4,12 @@ type CSS string
 
 func (c CSS) String() string { return string(c) }
 
+type CSSClass struct {
+	Name  string
+	Class CSSProps
+	Raw   CSS
+}
+
 type HTML string
 
 func (h HTML) String() string { return string(h) }
