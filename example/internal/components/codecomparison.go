@@ -13,18 +13,23 @@ func CodeComparison(titleElementId string) *g.HTMLElement {
 
 	es := s.GetElementService()
 
-	g.Class(".code-comparison-hover", g.CSSProps{
-		"background-color":   theme.Base02,
-		"box-shadow":         fmt.Sprintf("inset 0 0 0 2px %s", theme.Green),
-		"-webkit-box-shadow": fmt.Sprintf("inset 0 0 0 2px %s", theme.Green),
-		"-moz-box-shadow":    fmt.Sprintf("inset 0 0 0 2px %s", theme.Green),
+	g.Class(&g.CSSClass{
+		Selector: ".code-comparison-hover",
+		Props: g.CSSProps{
+			"background-color":   theme.Base02,
+			"box-shadow":         fmt.Sprintf("inset 0 0 0 2px %s", theme.Green),
+			"-webkit-box-shadow": fmt.Sprintf("inset 0 0 0 2px %s", theme.Green),
+			"-moz-box-shadow":    fmt.Sprintf("inset 0 0 0 2px %s", theme.Green),
+		},
 	})
 
-	g.Class(".code-comparison", g.CSSProps{
-		"display":         "flex",
-		"flex-direction":  "row",
-		"justify-content": "space-between",
-		"text-align":      "left",
+	g.Class(&g.CSSClass{
+		Selector: ".code-comparison", Props: g.CSSProps{
+			"display":         "flex",
+			"flex-direction":  "row",
+			"justify-content": "space-between",
+			"text-align":      "left",
+		},
 	})
 
 	mediaSquare := "(max-aspect-ratio: 1.2)"

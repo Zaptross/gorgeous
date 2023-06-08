@@ -9,8 +9,14 @@ import (
 
 func Body() *g.HTMLElement {
 	theme := prv.ThemeProvider.GetTheme()
+	classes := GetClassPallette()
 
 	titleId := "title-element"
+
+	// This is a simple example of how to use the Blend function to create a new CSS class from two existing classes.
+	// The new class will have the properties of both classes, with the properties of the second class taking precedence.
+	// The base classes are not modified, and because they aren't used elsewhere, they will be tree-shaken from the final CSS.
+	boldCyan := g.Blend(classes.BlueText, classes.BoldText)
 
 	return g.Body(g.EB{
 		Style: g.CSSProps{
@@ -21,8 +27,8 @@ func Body() *g.HTMLElement {
 			PageTitle(PageTitleProps{Id: titleId, Title: "✨ Gorgeous ✨"}),
 			g.Div(g.EB{Children: g.CE{
 				g.P(g.EB{
-					Children: g.CE{g.Text("Gorgeous is a server-side rendering library for Go, inspired by React and Flutter.")},
-					Style:    g.CSSProps{"color": theme.Cyan, "font-weight": "bold"},
+					Children:  g.CE{g.Text("Gorgeous is a server-side rendering library for Go, inspired by React and Flutter.")},
+					ClassList: []string{boldCyan},
 				}),
 				g.P(g.EB{
 					Children: g.CE{g.Text("The following is a code comparison between the title component on this page and the equivalent component in React.")},

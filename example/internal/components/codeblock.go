@@ -5,6 +5,7 @@ import (
 	"os"
 
 	g "github.com/zaptross/gorgeous"
+	prv "github.com/zaptross/gorgeous/example/internal/provider"
 )
 
 type CodeblockProps struct {
@@ -14,6 +15,19 @@ type CodeblockProps struct {
 }
 
 func Codeblock(props CodeblockProps) *g.HTMLElement {
+	theme := prv.ThemeProvider.GetTheme()
+
+	g.Class(&g.CSSClass{
+		Selector: ".codeblock",
+		Props: g.CSSProps{
+			"background-color": theme.Base02 + " !important",
+			"height":           "100%",
+			"border":           "1px solid " + theme.Green,
+			"padding":          "0.5rem",
+			"font-family":      "monospace !important",
+		},
+	})
+
 	return g.Div(
 		g.EB{
 			Children: g.CE{
