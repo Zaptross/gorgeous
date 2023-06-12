@@ -22,7 +22,8 @@ func Codeblock(props CodeblockProps) *g.HTMLElement {
 		Props: g.CSSProps{
 			"background-color": theme.Base02 + " !important",
 			"height":           "100%",
-			"border":           "1px solid " + theme.Green,
+			"border":           "1px solid",
+			"border-color":     theme.Green,
 			"padding":          "0.5rem",
 			"font-family":      "monospace !important",
 		},
