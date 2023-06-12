@@ -2,6 +2,7 @@ package gorgeous
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/google/uuid"
@@ -200,8 +201,17 @@ func renderClassList(classList []string) string {
 func renderCSSProps(name string, class CSSProps) CSS {
 	style := CSS("")
 
-	for key, value := range class {
-		style += CSS(fmt.Sprintf("\t%s: %s;\n", key, value))
+	keys := make([]string, len(class))
+	for key := range class {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
+		if key == "" {
+			continue
+		}
+		style += CSS(fmt.Sprintf("\t%s: %s;\n", key, class[key]))
 	}
 
 	return CSS(fmt.Sprintf("%s {\n%s}\n", name, style))
