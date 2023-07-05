@@ -77,6 +77,17 @@ func RenderElement(element *HTMLElement, parentId string) *RenderedHTML {
 		Style:    "",
 	}
 
+	if element.OpenTag == "" && element.CloseTag == "" && element.Text == "" {
+		// Render empty element and return early
+		return renderedHtml
+	}
+
+	if element.OpenTag == "" && element.CloseTag == "" && element.Text != "" {
+		// Render text content and return early
+		renderedHtml.Document += renderTextContent(element)
+		return renderedHtml
+	}
+
 	if element.EB.Id == "" {
 		element.EB.Id = uuid.New().String()
 	}
@@ -131,14 +142,35 @@ func renderElementProps(element *HTMLElement) HTML {
 	}
 
 	return HTML(fmt.Sprintf(
-		`%s %s %s %s %s >%s`,
+		`%s %s>%s`,
 		element.OpenTag,
-		renderElementId(element),
-		`style="`+renderStyles(element.EB.Style)+`"`,
-		`class="`+renderClassList(element.EB.ClassList)+`"`,
-		renderTextProps(element.EB.Props),
+		strings.TrimSpace(
+			strings.Join(
+				removeEmptyStrings(
+					[]string{
+						renderElementId(element),
+						renderStyles(element.EB.Style),
+						renderClassList(element.EB.ClassList),
+						renderTextProps(element.EB.Props),
+					},
+				),
+				" ",
+			),
+		),
 		text,
 	))
+}
+
+func removeEmptyStrings(strings []string) []string {
+	var result []string
+
+	for _, str := range strings {
+		if str != "" {
+			result = append(result, str)
+		}
+	}
+
+	return result
 }
 
 func renderElementScript(element *HTMLElement) HTML {
@@ -181,7 +213,7 @@ func renderStyles(styles CSSProps) string {
 		style += fmt.Sprintf(`%s: %s;`, key, value)
 	}
 
-	return style
+	return `style="` + style + `"`
 }
 
 func renderClassList(classList []string) string {
@@ -189,16 +221,14 @@ func renderClassList(classList []string) string {
 		return ""
 	}
 
-	var classes string
-
-	for _, class := range classList {
-		classes += fmt.Sprintf(`%s `, class)
-	}
-
-	return classes
+	return `class="` + strings.Join(classList, " ") + `"`
 }
 
 func renderCSSProps(name string, class CSSProps) CSS {
+	if len(class) == 0 {
+		return CSS("")
+	}
+
 	style := CSS("")
 
 	keys := make([]string, len(class))
@@ -224,9 +254,17 @@ func renderTextProps(props Props) string {
 		return textProps
 	}
 
-	for key, value := range props {
-		textProps += fmt.Sprintf(` %s="%s"`, key, strings.ReplaceAll(value, `"`, `'`))
+	keys := []string{}
+	for key := range props {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	renderedProps := []string{}
+
+	for _, key := range keys {
+		renderedProps = append(renderedProps, fmt.Sprintf(`%s="%s"`, key, strings.ReplaceAll(props[key], `"`, `'`)))
 	}
 
-	return textProps
+	return strings.Join(renderedProps, " ")
 }
