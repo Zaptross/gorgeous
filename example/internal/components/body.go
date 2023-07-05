@@ -24,6 +24,7 @@ func Body() *g.HTMLElement {
 			"margin-bottom": "10px",
 		},
 		Children: g.CE{
+			g.Empty(), // This should not render anything in the final HTML
 			PageTitle(PageTitleProps{Id: titleId, Title: "✨ Gorgeous ✨"}),
 			g.Div(g.EB{Children: g.CE{
 				g.P(g.EB{
