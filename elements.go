@@ -70,6 +70,27 @@ func RawText(content string) *HTMLElement {
 	}
 }
 
+// The empty element is a special case, standing in as a placeholder for an empty
+// element. It is not rendered as a HTML element, but rather as an empty string.
+//
+// Eg:
+//
+//	Div(&EB{
+//	    Children: CE{
+//	      Empty(),
+//	    },
+//	})
+//
+// renders as:
+//
+//	`<div></div>`
+func Empty() *HTMLElement {
+	return &HTMLElement{
+		OpenTag:  "",
+		CloseTag: "",
+	}
+}
+
 // The custom element is a special case, standing in as a placeholder for any element
 // not already defined in the framework.
 //
@@ -206,6 +227,10 @@ func Em(e EB) *HTMLElement { return apply(createElement("em"), e) }
 // MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a
 func A(e EB) *HTMLElement { return apply(createElement("a"), e) }
 
+// Creates a new I element.
+// MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/i
+func I(e EB) *HTMLElement { return apply(createElement("i"), e) }
+
 // Creates a new Img element.
 // MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
 func Img(e EB) *HTMLElement { return apply(createElement("img"), e) }
@@ -243,6 +268,18 @@ func Option(e EB) *HTMLElement { return apply(createElement("option"), e) }
 // Creates a new Textarea element.
 // MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea
 func Textarea(e EB) *HTMLElement { return apply(createElement("textarea"), e) }
+
+// Creates a new Fieldset element.
+// MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/fieldset
+func Fieldset(e EB) *HTMLElement { return apply(createElement("fieldset"), e) }
+
+// Creates a new Details element.
+// MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details
+func Details(e EB) *HTMLElement { return apply(createElement("details"), e) }
+
+// Creates a new Summary element.
+// MDN Reference: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/summary
+func Summary(e EB) *HTMLElement { return apply(createElement("summary"), e) }
 
 // Table
 
