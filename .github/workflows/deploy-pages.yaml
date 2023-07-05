@@ -4,8 +4,7 @@ name: Deploy static content to Pages
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches:
-      ["main", "ci/*", "feat/empty-i-fieldset-details-summary-and-tests"]
+    branches: ["main", "ci/*"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -36,9 +35,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: "1.20.4"
-
-      - name: Test
-        run: go test
 
       - run: cd example/cmd && go mod download
       - run: cd example/cmd && go run .
