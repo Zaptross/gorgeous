@@ -14,6 +14,11 @@ func renderElementDeferred(element *HTMLElement, parentId string) *RenderedHTML 
 		Services: "",
 	}
 
+	if element.OpenTag == "" && element.CloseTag == "" && element.Text == "" {
+		// Render empty element and return early
+		return rendered
+	}
+
 	if element.EB.Id == "" {
 		element.EB.Id = uuid.New().String()
 	}
@@ -39,8 +44,8 @@ func renderElementDeferredProps(element *HTMLElement, parentId string, innerText
 		element.EB.Id = uuid.New().String()
 	}
 
-       // TODO - this should probably be refactored into a default service function
-       // TODO - this needs some way to handle rerendering elements of the sub tree
+	// TODO - this should probably be refactored into a default service function
+	// TODO - this needs some way to handle rerendering elements of the sub tree
 	return JavaScript(fmt.Sprintf(
 		`{
 		const ele = document.createElement("%s");
@@ -55,10 +60,10 @@ func renderElementDeferredProps(element *HTMLElement, parentId string, innerText
 		addEventListener("load", () => ((thisElement) => { %s })(document.getElementById('%s')));
 		}
 		`,
-		renderElementTagFromOpenTag(element.OpenTag),
+		element.Tag,
 		element.EB.Id,
 		element.EB.OnClick,
-		renderStyles(element.EB.Style),
+		renderDeferredStyles(element.EB.Style),
 		renderDeferredClassList(element.EB.ClassList),
 		renderElementDeferredTextProps(element.EB.Props),
 		"`"+innerText+"`",
@@ -68,11 +73,18 @@ func renderElementDeferredProps(element *HTMLElement, parentId string, innerText
 	))
 }
 
-func renderElementTagFromOpenTag(openTag string) string {
-	if openTag == "" {
+func renderDeferredStyles(styles CSSProps) string {
+	if len(styles) == 0 {
 		return ""
 	}
-	return strings.ReplaceAll(strings.ReplaceAll(openTag, "<", ""), " ", "")
+
+	var style string
+
+	for key, value := range styles {
+		style += fmt.Sprintf(`%s: %s;`, key, value)
+	}
+
+	return style
 }
 
 func renderDeferredClassList(classList []string) string {
@@ -80,7 +92,7 @@ func renderDeferredClassList(classList []string) string {
 		return ""
 	}
 
-	return fmt.Sprintf(`		"%s".split(" ").map(c => ele.classList.add(c));`, renderClassList(classList))
+	return fmt.Sprintf(`		"%s".split(" ").map(c => ele.classList.add(c));`, strings.Join(classList, " "))
 }
 
 func renderElementDeferredTextProps(props Props) JavaScript {
