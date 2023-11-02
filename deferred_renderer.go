@@ -2,6 +2,7 @@ package gorgeous
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/google/uuid"
@@ -78,10 +79,16 @@ func renderDeferredStyles(styles CSSProps) string {
 		return ""
 	}
 
+	keys := make([]string, 0, len(styles))
+	for key := range styles {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
 	var style string
 
-	for key, value := range styles {
-		style += fmt.Sprintf(`%s: %s;`, key, value)
+	for _, key := range keys {
+		style += fmt.Sprintf(`%s: %s;`, key, styles[key])
 	}
 
 	return style
@@ -100,10 +107,16 @@ func renderElementDeferredTextProps(props Props) JavaScript {
 		return ""
 	}
 
+	keys := make([]string, 0, len(props))
+	for key := range props {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
 	var script JavaScript
 
-	for key, value := range props {
-		script += JavaScript(fmt.Sprintf(`ele.%s = "%s";\n`, key, value))
+	for _, key := range keys {
+		script += JavaScript(fmt.Sprintf(`ele.%s = "%s";\n`, key, props[key]))
 	}
 
 	return script

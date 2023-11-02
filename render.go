@@ -207,10 +207,16 @@ func renderStyles(styles CSSProps) string {
 		return ""
 	}
 
+	keys := make([]string, 0, len(styles))
+	for key := range styles {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
 	var style string
 
-	for key, value := range styles {
-		style += fmt.Sprintf(`%s: %s;`, key, value)
+	for _, key := range keys {
+		style += fmt.Sprintf(`%s: %s;`, key, styles[key])
 	}
 
 	return `style="` + style + `"`
