@@ -5,13 +5,10 @@ import (
 
 	g "github.com/zaptross/gorgeous"
 	p "github.com/zaptross/gorgeous/example/internal/provider"
-	s "github.com/zaptross/gorgeous/example/internal/services"
 )
 
-func CodeComparison(titleElementId string) *g.HTMLElement {
+func CodeComparison(titleRef *g.Reference) *g.HTMLElement {
 	theme := p.ThemeProvider.GetTheme()
-
-	es := s.GetElementService()
 
 	g.Class(&g.CSSClass{
 		Selector: ".code-comparison-hover",
@@ -57,12 +54,11 @@ func CodeComparison(titleElementId string) *g.HTMLElement {
 			}),
 		},
 		Style:  g.CSSProps{},
-		Script: g.JavaScript(g.JavaScript(getMouseEventScript(es, titleElementId))),
+		Script: g.JavaScript(g.JavaScript(getMouseEventScript(titleRef))),
 	})
 }
 
-func getMouseEventScript(es string, titleId string) string {
-	titleElement := fmt.Sprintf(`%s('%s')`, es, titleId)
+func getMouseEventScript(title *g.Reference) string {
 	return fmt.Sprintf(`
 		thisElement.addEventListener('mouseover', () => {
 			%s?.classList.add('code-comparison-hover');
@@ -70,5 +66,5 @@ func getMouseEventScript(es string, titleId string) string {
 		thisElement.addEventListener('mouseout', () => {
 			%s?.classList.remove('code-comparison-hover');
 		});
-	`, titleElement, titleElement)
+	`, title.Javascript(), title.Javascript())
 }

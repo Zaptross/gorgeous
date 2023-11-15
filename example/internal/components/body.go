@@ -11,7 +11,7 @@ func Body() *g.HTMLElement {
 	theme := prv.ThemeProvider.GetTheme()
 	classes := GetClassPallette()
 
-	titleId := "title-element"
+	titleRef := g.CreateRef("title-element")
 
 	// This is a simple example of how to use the Blend function to create a new CSS class from two existing classes.
 	// The new class will have the properties of both classes, with the properties of the second class taking precedence.
@@ -25,7 +25,7 @@ func Body() *g.HTMLElement {
 		},
 		Children: g.CE{
 			g.Empty(), // This should not render anything in the final HTML
-			PageTitle(PageTitleProps{Id: titleId, Title: "✨ Gorgeous ✨"}),
+			titleRef.Get(PageTitle(PageTitleProps{Title: "✨ Gorgeous ✨"})),
 			g.Div(g.EB{Children: g.CE{
 				g.P(g.EB{
 					Children:  g.CE{g.Text("Gorgeous is a server-side rendering library for Go, inspired by React and Flutter.")},
@@ -36,7 +36,7 @@ func Body() *g.HTMLElement {
 					Style:    g.CSSProps{"color": theme.Base2},
 				}),
 			}}),
-			CodeComparison(titleId),
+			CodeComparison(titleRef),
 			g.P(g.EB{
 				Children: g.CE{
 					g.Text("It's still in early development, but you can check out the source code for this page on "),
