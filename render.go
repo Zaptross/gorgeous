@@ -141,6 +141,18 @@ func renderElementProps(element *HTMLElement) HTML {
 		text = element.Text
 	}
 
+	if element.OnClick != "" {
+		if element.EB.Props == nil {
+			element.EB.Props = Props{}
+		}
+
+		if element.EB.Props["onclick"] != "" {
+			element.EB.Props["onclick"] += ";" + string(element.OnClick)
+		} else {
+			element.EB.Props["onclick"] = string(element.OnClick)
+		}
+	}
+
 	return HTML(fmt.Sprintf(
 		`%s %s>%s`,
 		element.OpenTag,
@@ -269,6 +281,9 @@ func renderTextProps(props Props) string {
 	renderedProps := []string{}
 
 	for _, key := range keys {
+		if key == "" || props[key] == "" {
+			continue
+		}
 		renderedProps = append(renderedProps, fmt.Sprintf(`%s="%s"`, key, strings.ReplaceAll(props[key], `"`, `'`)))
 	}
 

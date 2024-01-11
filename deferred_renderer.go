@@ -51,7 +51,7 @@ func renderElementDeferredProps(element *HTMLElement, parentId string, innerText
 		`{
 		const ele = document.createElement("%s");
 		ele.id = "%s";
-		ele.onclick = "%s";
+		%s
 		ele.style = "%s";
 		%s
 		%s
@@ -63,7 +63,7 @@ func renderElementDeferredProps(element *HTMLElement, parentId string, innerText
 		`,
 		element.Tag,
 		element.EB.Id,
-		element.EB.OnClick,
+		renderDeferredOnClick(element.EB.OnClick, element.EB.Props),
 		renderDeferredStyles(element.EB.Style),
 		renderDeferredClassList(element.EB.ClassList),
 		renderElementDeferredTextProps(element.EB.Props),
@@ -116,8 +116,30 @@ func renderElementDeferredTextProps(props Props) JavaScript {
 	var script JavaScript
 
 	for _, key := range keys {
+		if key == "onclick" {
+			continue // onclick is handled separately
+		}
 		script += JavaScript(fmt.Sprintf(`ele.%s = "%s";\n`, key, props[key]))
 	}
 
 	return script
+}
+
+func renderDeferredOnClick(onClick JavaScript, props Props) string {
+	if onClick == "" && props != nil && props["onclick"] == "" {
+		return ""
+	}
+
+	onClickScript := ""
+	if props != nil && props["onclick"] != "" {
+		onClickScript = props["onclick"]
+	}
+	if onClickScript != "" && onClick != "" {
+		onClickScript += ";"
+	}
+	if onClick != "" {
+		onClickScript += string(onClick)
+	}
+
+	return fmt.Sprintf(`		ele.onclick = "%s";`, onClickScript)
 }
