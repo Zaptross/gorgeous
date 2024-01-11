@@ -45,8 +45,15 @@ type CSSProps = map[string]string
 // It has been shortened to EB to reduce the amount of typing required to create
 type EB struct {
 	// html element attributes
-	Id        string
-	OnClick   string
+	Id string
+	// The attribute which specified the onclick event handler for the element.
+	// This is a string containing JavaScript code which is executed when the
+	// element is clicked.
+	//
+	// If both OnClick and Props["onclick"] are specified, then the two values
+	// will be concatenated with a semicolon. Props["onclick"] will be executed
+	// first.
+	OnClick   JavaScript
 	Style     CSSProps
 	ClassList []string
 
