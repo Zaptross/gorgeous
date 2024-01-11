@@ -49,7 +49,8 @@ func TestRenderElementDeferredTextPropsTableDriven(t *testing.T) {
 	}{
 		{Props{}, ""},
 		{Props{"id": "test"}, `ele.id = "test";\n`},
-		{Props{"id": "test", "onclick": "test"}, `ele.id = "test";\nele.onclick = "test";\n`},
+		// test that onclick is handled separately
+		{Props{"id": "test", "onclick": "test"}, `ele.id = "test";\n`},
 	}
 
 	for _, test := range tests {
@@ -57,6 +58,27 @@ func TestRenderElementDeferredTextPropsTableDriven(t *testing.T) {
 
 		if output.String() != test.expected {
 			t.Errorf("renderElementDeferredTextProps(%v) did not render \"%s\", got: \"%s\"", test.input, test.expected, output)
+		}
+	}
+}
+
+func TestRenderDeferredOnClickTableDriven(t *testing.T) {
+	tests := []struct {
+		OnClick      string
+		PropsOnClick string
+		expected     string
+	}{
+		{"", "", ""},
+		{"clip()", "", `		ele.onclick = "clip()";`},
+		{"", "clip()", `		ele.onclick = "clip()";`},
+		{"clip()", "clip()", `		ele.onclick = "clip();clip()";`},
+	}
+
+	for _, test := range tests {
+		output := renderDeferredOnClick(JavaScript(test.OnClick), Props{"onclick": test.PropsOnClick})
+
+		if output != test.expected {
+			t.Errorf("renderDeferredOnClick(%v) did not render \"%s\", got: \"%s\"", test.OnClick, test.expected, output)
 		}
 	}
 }

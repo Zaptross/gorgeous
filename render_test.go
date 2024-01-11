@@ -56,8 +56,11 @@ func TestRenderTextPropsTableDriven(t *testing.T) {
 		{Props{}, ""},
 		{Props{"test": "test"}, "test=\"test\""},
 		{Props{"test": "test", "test2": "test2"}, "test=\"test\" test2=\"test2\""},
-		// tests that the rendered props are sorted alphabetically
+		// test that the rendered props are sorted alphabetically
 		{Props{"zzz": "zzz", "aaa": "aaa"}, "aaa=\"aaa\" zzz=\"zzz\""},
+		// test that empty keys and values are ignored
+		{Props{"": "nope", "test": "test"}, "test=\"test\""},
+		{Props{"nope": "", "test": "test"}, "test=\"test\""},
 	}
 
 	for _, test := range tests {
@@ -150,6 +153,31 @@ func TestRemoveEmptyStringsTableDriven(t *testing.T) {
 			if str != test.expected[i] {
 				t.Errorf("removeEmptyStrings(%v) did not return %v, got: %v", test.input, test.expected, output)
 			}
+		}
+	}
+}
+
+func TestRenderOnClickTableDriven(t *testing.T) {
+	tests := []struct {
+		OnClick      string
+		PropsOnClick string
+		Expected     string
+	}{
+		{"", "", `<div id="a"></div>`},
+		{"clip()", "", `<div id="a" onclick="clip()"></div>`},
+		{"", "clip()", `<div id="a" onclick="clip()"></div>`},
+		{"clip()", "clip()", `<div id="a" onclick="clip();clip()"></div>`},
+	}
+
+	for _, test := range tests {
+		ele := Div(EB{
+			Id:      "a",
+			OnClick: JavaScript(test.OnClick),
+			Props:   Props{"onclick": test.PropsOnClick}})
+		output := RenderElement(ele, "")
+
+		if output.Document.String() != test.Expected {
+			t.Errorf("RenderElement(%v) did not render \"%s\", got: \"%s\"", ele, test.Expected, output.Document.String())
 		}
 	}
 }
