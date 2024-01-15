@@ -34,19 +34,19 @@ func Class(c *CSSClass) *CSSClass {
 // adds it to the global css.
 // Eg:
 //
-//	gorgeous.Media("(max-width: 600px)", "my-class", gorgeous.CSSProps{
+//	gorgeous.Media("(max-width: 600px)", ".my-class > div", gorgeous.CSSProps{
 //		"color": "red",
 //	})
 //
 // renders as:
 //
 //	`@media (max-width: 600px) {
-//		.my-class {
+//		.my-class > div {
 //			color: red;
 //		}
 //	}`
-func Media(query string, name string, class CSSProps) {
-	RawMedia(query, renderCSSProps(name, class))
+func Media(query string, selector string, class CSSProps) {
+	RawMedia(query, renderCSSProps(selector, class))
 }
 
 // Create a CSS class within a media query from a string and adds it to the global css.
