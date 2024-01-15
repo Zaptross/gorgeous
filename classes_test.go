@@ -9,7 +9,7 @@ func clearClasses() {
 	classes = map[string]CSSClass{}
 }
 func clearMedia() {
-	media = map[string][]CSS{}
+	media = map[string]map[string]CSS{}
 }
 
 func TestClass(t *testing.T) {
@@ -90,7 +90,7 @@ func TestMedia(t *testing.T) {
 		t.Errorf("Media did not add the class to the media query")
 	}
 
-	rawClass := media[tc.query][0]
+	rawClass := media[tc.query][tc.expectedSelector]
 	if strings.Contains(rawClass.String(), tc.expectedSelector) == false {
 		t.Errorf("Media did not add the class to the media query, expected: %s, got: %s", tc.expectedSelector, rawClass.String())
 	}
@@ -105,10 +105,12 @@ func TestRawMedia(t *testing.T) {
 
 	tc := struct {
 		query       string
+		selector    string
 		rawCSSClass string
 		expected    string
 	}{
-		query: "(max-width: 600px)",
+		query:    "(max-width: 600px)",
+		selector: ".my-class",
 		rawCSSClass: `.my-class {
 			color: red;
 		}`,
@@ -117,7 +119,7 @@ func TestRawMedia(t *testing.T) {
 		}`,
 	}
 
-	RawMedia(tc.query, CSS(tc.rawCSSClass))
+	RawMedia(tc.query, tc.selector, CSS(tc.rawCSSClass))
 
 	if len(media) != 1 {
 		t.Errorf("RawMedia did not add the media query to the media map")
@@ -127,7 +129,7 @@ func TestRawMedia(t *testing.T) {
 		t.Errorf("RawMedia did not add the class to the media query")
 	}
 
-	rawClass := media[tc.query][0]
+	rawClass := media[tc.query][tc.selector]
 	if rawClass.String() != tc.expected {
 		t.Errorf("RawMedia did not add the class to the media query, expected: %s, got: %s", tc.expected, rawClass.String())
 	}
@@ -143,6 +145,15 @@ func TestCollectClasses(t *testing.T) {
 		Props: CSSProps{
 			"color": "red",
 		},
+	})
+	Class(&CSSClass{
+		Selector: "." + className,
+		Props: CSSProps{
+			"color": "red",
+		},
+	})
+	Media("(max-width: 600px)", "."+className, CSSProps{
+		"color": "blue",
 	})
 	Media("(max-width: 600px)", "."+className, CSSProps{
 		"color": "blue",
@@ -160,11 +171,22 @@ func TestCollectClasses(t *testing.T) {
 		t.Errorf("collectClasses did not collect the classes, expected: 0, got: %d", len(classes))
 	}
 
+	// test that the normal classes are included
 	if strings.Index(classes.String(), "@media") <= 0 {
 		t.Errorf("collectClasses did not collect the classes, expected: >0, got: %d", len(classes))
 	}
 
 	if !strings.Contains(classes.String(), "color: red;") && !strings.Contains(classes.String(), "color: blue;") {
 		t.Errorf("collectClasses did not collect the classes, expected: %s, got: %s", "color: red;", classes)
+	}
+
+	// test that the normal class is not duplicated
+	if len(strings.Split(classes.String(), "color: red;")) != 2 {
+		t.Errorf("collectClasses did not tree-shake the classes, expected: 2, got: %d", len(strings.Split(classes.String(), "color: red;")))
+	}
+
+	// test that the media class is not duplicated
+	if len(strings.Split(classes.String(), "color: blue;")) != 2 {
+		t.Errorf("collectClasses did not tree-shake the media classes, expected: 2, got: %d", len(strings.Split(classes.String(), "color: blue;")))
 	}
 }
