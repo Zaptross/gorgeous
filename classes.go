@@ -6,7 +6,7 @@ import (
 )
 
 var classes = map[string]CSSClass{}
-var media = map[string][]CSS{}
+var media = map[string]map[string]CSS{}
 
 // Create a CSS class from a map of CSS properties and
 // adds it to the global css.
@@ -25,6 +25,13 @@ var media = map[string][]CSS{}
 //		color: red;
 //	}`
 func Class(c *CSSClass) *CSSClass {
+	_, ok := classes[c.Selector]
+	old := renderCSSProps(c.Selector, classes[c.Selector].Props)
+	new := renderCSSProps(c.Selector, c.Props)
+	if ok && old != new {
+		panic(fmt.Sprintf(`gorgeous: class '%s' is already registered\nExisting:\n%s\n\nNew:\n%s`, c.Selector, old, new))
+	}
+
 	classes[c.Selector] = *c
 
 	return c
@@ -34,41 +41,44 @@ func Class(c *CSSClass) *CSSClass {
 // adds it to the global css.
 // Eg:
 //
-//	gorgeous.Media("(max-width: 600px)", "my-class", gorgeous.CSSProps{
+//	gorgeous.Media("(max-width: 600px)", ".my-class > div", gorgeous.CSSProps{
 //		"color": "red",
 //	})
 //
 // renders as:
 //
 //	`@media (max-width: 600px) {
-//		.my-class {
+//		.my-class > div {
 //			color: red;
 //		}
 //	}`
-func Media(query string, name string, class CSSProps) {
-	RawMedia(query, renderCSSProps(name, class))
+func Media(query string, selector string, class CSSProps) {
+	RawMedia(query, selector, renderCSSProps(selector, class))
 }
 
 // Create a CSS class within a media query from a string and adds it to the global css.
 // Eg:
 //
-//	gorgeous.RawMedia("(max-width: 600px)", `.my-class {
+//	gorgeous.RawMedia("(max-width: 600px)", ".my-class > div", `.my-class > div {
 //		color: red;
 //	}`)
 //
 // renders as:
 //
 //	`@media (max-width: 600px) {
-//		.my-class {
+//		.my-class > div {
 //			color: red;
 //		}
 //	}`
-func RawMedia(query string, class CSS) {
+func RawMedia(query string, selector string, class CSS) {
 	if media[query] == nil {
-		media[query] = []CSS{}
+		media[query] = map[string]CSS{}
+	}
+	if media[query][selector] != "" && media[query][selector] != class {
+		panic(fmt.Sprintf(`gorgeous: class '%s' is already registered\nExisting:\n%s\n\nNew:\n%s`, selector, media[query][selector], class))
 	}
 
-	media[query] = append(media[query], class)
+	media[query][selector] = class
 }
 
 // Create a CSS class from a string and adds it to the global css.
