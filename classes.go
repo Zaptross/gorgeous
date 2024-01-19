@@ -25,6 +25,13 @@ var media = map[string]map[string]CSS{}
 //		color: red;
 //	}`
 func Class(c *CSSClass) *CSSClass {
+	_, ok := classes[c.Selector]
+	old := renderCSSProps(c.Selector, classes[c.Selector].Props)
+	new := renderCSSProps(c.Selector, c.Props)
+	if ok && old != new {
+		panic(fmt.Sprintf(`gorgeous: class '%s' is already registered\nExisting:\n%s\n\nNew:\n%s`, c.Selector, old, new))
+	}
+
 	classes[c.Selector] = *c
 
 	return c
