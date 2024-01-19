@@ -15,8 +15,10 @@ func clearMedia() {
 func TestClass(t *testing.T) {
 	clearClasses()
 
+	selector := ".my-class"
+
 	Class(&CSSClass{
-		Selector: ".my-class",
+		Selector: selector,
 		Props: CSSProps{
 			"color": "red",
 		},
@@ -33,6 +35,20 @@ func TestClass(t *testing.T) {
 	if classes[".my-class"].Props["color"] != "red" {
 		t.Errorf("Class did not set the props correctly")
 	}
+
+	// test panic when trying to register a different class with the same selector
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("collectClasses did not panic when registering a different class with the same selector")
+		}
+	}()
+
+	Class(&CSSClass{
+		Selector: selector,
+		Props: CSSProps{
+			"color": "blue",
+		},
+	})
 }
 
 func TestRawClass(t *testing.T) {
@@ -98,6 +114,17 @@ func TestMedia(t *testing.T) {
 	if strings.Contains(rawClass.String(), tc.expectedProp) == false {
 		t.Errorf("Media did not add the class to the media query, expected: %s, got: %s", tc.expectedProp, rawClass.String())
 	}
+
+	// test panic when trying to register a different class with the same selector
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("collectClasses did not panic when registering a different class with the same selector")
+		}
+	}()
+
+	Media(tc.query, tc.className, CSSProps{
+		tc.key: "blue",
+	})
 }
 
 func TestRawMedia(t *testing.T) {
